@@ -7,6 +7,9 @@ import Logo from "./img/parasite.logo.png";
 
 import "./App.css";
 
+const IMAGE_WIDTH = 583
+const IMAGE_HEIGHT = 216
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -76,8 +79,11 @@ class App extends Component {
     this.ctx.fillRect(0, 0, this.width, this.height);
 
     this.ctx.drawImage(this.video, 0, 0, this.width, this.height);
-    
-    this.ctx.drawImage(this.image, 0, this.height - 216, 583, 216);
+
+    const width = this.canvas_width * 0.75;
+    const height = IMAGE_HEIGHT * (width / IMAGE_WIDTH) 
+
+    this.ctx.drawImage(this.image, (this.canvas_width - width) / 2, this.canvas_height - height, width, height);
 
     if (this.detections) {
       if (this.detections.length > 0) {
@@ -136,10 +142,14 @@ class App extends Component {
 
   createCanvas = (w, h) => {
     const canvas = this.canvasRef.current;
+    canvas.width =this.canvas_width
+    canvas.height =this.canvas_height
     return canvas;
   };
 
   componentDidMount() {
+    this.canvas_width = (window.innerWidth > 0) ? window.innerWidth : window.screen.width;
+    this.canvas_height = (window.innerHeight > 0) ? window.innerHeight : window.screen.height;
     this.make();
   }
 
