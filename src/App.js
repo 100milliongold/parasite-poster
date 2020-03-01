@@ -150,10 +150,10 @@ class App extends Component {
         {this.state.loading ? <p>Loading ......</p> : null}
         <Webcam
           audio={false}
-          height={this.height}
+          // height={this.height}
           ref={this.vidioRef}
           screenshotFormat="image/jpeg"
-          width={this.width}
+          // width={this.width}
           videoConstraints={this.videoConstraints}
           style={{ display: "none" }}
         />
