@@ -80,10 +80,10 @@ class App extends Component {
 
     this.ctx.drawImage(this.video, 0, 0, this.width, this.height);
 
-    const width = this.canvas_width * 0.75;
-    const height = IMAGE_HEIGHT * (width / IMAGE_WIDTH) 
+    // const width = this.canvas_width * 0.75;
+    // const height = IMAGE_HEIGHT * (width / IMAGE_WIDTH) 
 
-    this.ctx.drawImage(this.image, (this.canvas_width - width) / 2, this.canvas_height - height, width, height);
+    // this.ctx.drawImage(this.image, (this.canvas_width - width) / 2, this.canvas_height - height, width, height);
 
     if (this.detections) {
       if (this.detections.length > 0) {
@@ -98,12 +98,10 @@ class App extends Component {
   drawEyeBox = (detections) => {
     const X_WEIGHT = 0.3,
       Y_WEIGHT = 3;
-    const { x, y, boxWidth, boxHeight } = _.go(
+    return  _.go(
       detections,
-      L.map(({ parts: { leftEye, rightEye } }) => [leftEye, rightEye]),
-      L.deepFlat,
-      _.takeAll,
-      (list) => {
+      L.map(({ parts: { leftEye, rightEye } }) => _.flatten([leftEye, rightEye])),
+      L.map((list) => {
         const maxXpoint = _.maxBy(({ _x }) => _x, list)._x;
         let x = _.minBy(({ _x }) => _x, list)._x;
         x = x - x * X_WEIGHT;
@@ -113,13 +111,22 @@ class App extends Component {
         boxWidth = boxWidth + boxWidth * X_WEIGHT;
         const boxHeight = maxYpoint - y + Y_WEIGHT;
         return { x, y, boxWidth, boxHeight };
-      },
+      }),
+      
+      // L.deepFlat,
+      _.takeAll,
+      _.forEach(({ x, y, boxWidth, boxHeight }) => {
+        this.ctx.beginPath();
+        this.ctx.fillStyle = "rgb(0,0,0)";
+        this.ctx.fillRect(x, y, boxWidth, boxHeight);
+        this.ctx.stroke();
+        this.ctx.closePath();
+      }),
+      // o => {
+      //   console.log(o)
+      //   return o
+      // },
     );
-    this.ctx.beginPath();
-    this.ctx.fillStyle = "rgb(0,0,0)";
-    this.ctx.fillRect(x, y, boxWidth, boxHeight);
-    this.ctx.stroke();
-    this.ctx.closePath();
   };
 
   // Helper Functions
